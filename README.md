@@ -1,2 +1,2 @@
 # VAERS-Analysis
-An analysis of a VAERS data set
+VAERS stands for Vaccine Adverse Event Reporting System. This reporting system is used whenever a person has an adverse effect after vaccine is taken and it collects information on the type of vaccine received, timing of vaccination, onset of the adverse event, current illnesses or medication, past history of adverse events, and demographic information.  All healthcare providers are required by law to report any health problems that happen after a vaccine was taken to VAERS. However, anyone that was given a vaccine and had an  adverse event effect  can submit a VAERS report online even if they are uncertain that the vaccine is the cause. In this project I will analyze the VAERS 2019 data.
