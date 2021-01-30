@@ -1,0 +1,110 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+
+```{r}
+library(readr)
+d.df <- read_csv("2019VAERSDATA.csv")
+install.packages("Hmisc")
+library(Hmisc)
+install.packages ("ggplot2")
+library ("ggplot2")
+
+```
+
+First I upload the VAERS data file that is being used and installed all necessary 
+packages 
+```{r}
+data <- d.df[,c("VAERS_ID","STATE","AGE_YRS", "SEX", "NUMDAYS")]
+head(data)
+```
+Created a subset of the data with only the columns corresponding to the ID, state, age, sex, and number of days hospitilized and displayed the head of the data. 
+
+```{r}
+summary(data)
+```
+
+
+```{r}
+range(data$AGE_YRS, finite= TRUE)
+```
+The age range is from zero to one hundred and thirteen.
+
+```{r}
+data[order(-data$AGE_YRS),]
+```
+
+Listed the data in descending order by age
+```{r}
+range(data$NUMDAYS, finite= TRUE)
+```
+
+
+```{r}
+data[order(-data$NUMDAYS),]
+```
+```{r}
+S <-table(d.df$SEX)
+S
+```
+
+From the table I know the frequency of each gender on the list. 
+Females = 28076
+Male= 13735
+Unknown= 6643
+```{r}
+slices <- c(28076, 13735,6643)
+lbls <- c("Females", "Males", "Unknown")
+pct <- round(slices/sum(slices)*100)
+lbls <- paste(lbls, pct) # add percents to labels
+lbls <- paste(lbls,"%",sep="") # ad % to labels
+pie(slices,labels = lbls, col=rainbow(length(lbls)),
+    main="SEX")
+
+```
+The pie chart shows the gender that appear the most on the VAERs system is females
+```{r}
+library(ggplot2)
+ggplot() + geom_histogram(data= d.df, aes(x=AGE_YRS),fill="blue", 
+                          color="black")+ggtitle("Histogram of Age")
+```
+
+
+
+```{r}
+library(ggplot2)
+ggplot(d.df,aes(x=AGE_YRS, y= NUMDAYS ))+geom_point() +ggtitle("Age Versus Number of Days Hospitlized")
+```
+Most of the data is concentrated at the bottom part of the plot indicating that most of people on the VAERS list did not spend a lot of time at the hospital. 
+```{r}
+d.df[d.df==0] <- 0
+IQR(d.df$NUMDAYS,na.rm = TRUE)
+```
+Most of the people on the VAERs list were not hospitalized regardless of age. The IQ range is 1 considering all of the people on listed that were hospitalized.
+```{r}
+d.df[d.df==0]<- NA
+d.df[d.df > 100] <- NA
+library(ggplot2)
+mm <- ggplot(d.df,aes(x=AGE_YR, y= NUMDAYS, color= NUMDAYS ))+ geom_point()+ggtitle("Age Versus Number of Days Hospitlized Less Than or Equal to 100")
+mm
+
+```
+Took a closer look at previous scatter plot. This plot only shows data from people who at least spent 1 day in the hospital but no more than 100 days. Of the people admitted to the hospital majority of the data across all ages is concentrated  at the bottom of the graph. This indicates that there is not a correlation between age and the number of days in hospital.
+```{r}
+State <-table(d.df$STATE) 
+st <- as.data.frame(State)
+st  <-setNames(st, c("state", "Freq"))
+st
+```
+```{r}
+library(usmap)
+library(ggplot2)
+plot_usmap(data = st, values = "Freq", exclude= c("FM", "GU", "MH" , "RP", "VI", "PR", "DC")) + scale_fill_gradient(low="steelblue1", high="steelblue4") + ggtitle("Number of People on VAERs List in the United States")
+```
+```{r}
+st[order(-st$Freq),]
+```
+
+Table of frequency of a state on the VAERs list
